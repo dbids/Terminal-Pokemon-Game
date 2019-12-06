@@ -107,3 +107,15 @@ void BattleArena::ShowStatus()
     cout << "	Pokemon dollar per fight: " << dollar_cost_per_fight << endl;
     cout << "	" << num_rivals_remaining << " rival(s) are remaining for this arena" << endl;
 }
+
+//Adds a rival to the battle arena
+void BattleArena::AddOneRival()
+{
+	num_rivals_remaining++;
+}
+
+//Removes a rival from the battle arena
+void BattleArena::RemoveOneRival()
+{
+	num_rivals_remaining--;
+}

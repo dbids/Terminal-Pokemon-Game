@@ -39,10 +39,10 @@ Model::Model()
 
     //Create all three rivals in the same arena as per Piazza post @394
     Point2D rival_loc(20,20);
+	arena_ptrs.push_back(new BattleArena(3, 3, 4.0, 1, rival_loc));
     rival_ptrs.push_back(new Rival("Gary", 1, 20, 3, 1, 50, 1, rival_loc));
     rival_ptrs.push_back(new Rival("May", 2, 20, 1, 3, 25, 2, rival_loc));
     rival_ptrs.push_back(new Rival("Joe", 1, 20, 2, 2, 37, 3, rival_loc));
-    arena_ptrs.push_back(new BattleArena(1, 3, 4.0, 1, rival_loc));
 
     //Assign them all to the object_ptrs list
     object_ptrs.assign(pokemon_ptrs.begin(), pokemon_ptrs.end());
@@ -157,16 +157,23 @@ bool Model::Update()
     }
     
     //Check if any GameObjects are not alive and remove them from active_ptrs
-    for (list<GameObject*>::iterator aoptr = active_ptrs.begin(); aoptr != active_ptrs.end(); )
+    for (list<GameObject*>::iterator aoptr = active_ptrs.begin(); aoptr != active_ptrs.end(); advance (aoptr, 1))
     {
-        if (!((*aoptr)->IsAlive()))
-        {
-            active_ptrs.erase(aoptr);
-            cout << "Dead object removed" << endl;
-        }
-        else
-        {
-            advance (aoptr, 1);
+		cout << (*aoptr)->GetId();
+		if (!((*aoptr)->IsAlive())) //Possibly try ShouldBeVisible();
+		{
+			if ((*aoptr) == active_ptrs.back())
+			{		
+				active_ptrs.pop_back();
+				cout << "Dead object removed" << endl;
+				aoptr = active_ptrs.end();
+			}
+			if (!((*aoptr)->IsAlive()))
+			{
+				active_ptrs.erase(aoptr, (++aoptr));
+				cout << "Dead object removed" << endl;
+				aoptr != active_ptrs.end();
+			}
         }
     }  
     //Update all objects in the Model
@@ -256,7 +263,7 @@ void Model::NewCommand(char type, int id_num, Point2D location)
             case 'p':
                 if (id_num > pokemon_ptrs.size() && id_num < 10)
                 {
-                    pokemon_ptrs.push_back(new Pokemon("NewPokemon", 1, 20, 5, 4, 2, id_num, 'P', location));
+                    pokemon_ptrs.push_back(new Pokemon("God", 1, 200, 100, 100, 50, id_num, 'P', location));
                     object_ptrs.push_back(pokemon_ptrs.back());
                     active_ptrs.push_back(pokemon_ptrs.back());
                 }

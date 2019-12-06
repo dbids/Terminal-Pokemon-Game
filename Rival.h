@@ -3,6 +3,7 @@ using namespace std;
 
 #include "GameObject.h"
 #include "Point2D.h"
+#include "BattleArena.h"
 
 #ifndef RIVAL_H
 #define RIVAL_H
@@ -39,6 +40,7 @@ protected:
     double defense;
     double stamina_cost_per_fight;
     bool is_in_arena;
+	BattleArena* current_arena;
 
     //Variables implied by constructor but not stated
     string name;

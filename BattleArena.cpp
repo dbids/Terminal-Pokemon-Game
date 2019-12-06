@@ -8,7 +8,7 @@ using namespace std;
 #include "GameObject.h"
 
 //Constructors / Destructors
-BattleArena::BattleArena():Building()
+BattleArena::BattleArena():Building('A', 1, Point2D(0,0))
 {
     max_num_rivals = 3;
     num_rivals_remaining = max_num_rivals;

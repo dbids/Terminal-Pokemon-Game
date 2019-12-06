@@ -49,15 +49,8 @@ public:
     void ShowStatus();
     bool Update();
 
-    //Things I added for program functionallity (mainly leaving and entering buildings)
+    //Things I added for program functionallity
     string GetName();
-    //bool arrived;
-    //bool leaving_gym;
-    //bool leaving_center;
-    //bool leaving_arena;
-    //int at_center_id;
-    //int at_gym_id;
-    //int at_arena_id;
 
     //New PA4 public members
     bool IsAlive();

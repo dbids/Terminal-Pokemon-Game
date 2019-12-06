@@ -26,6 +26,8 @@ public:
     bool Update();
     bool IsBeaten();
     void ShowStatus();
+	void AddOneRival();
+	void RemoveOneRival();
     
 private:
     //Private Member Variables

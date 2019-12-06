@@ -6,7 +6,7 @@ using namespace std;
 #include "Point2D.h"
 #include "Rival.h"
 
-//Constructor for Rival which for our purposes is all we need
+//Constructor for Rival
 Rival::Rival(string name, double speed, double hp, double phys_dmg, double magic_dmg,
              double def, int id, Point2D in_loc) : GameObject(in_loc, id, 'R')
 {

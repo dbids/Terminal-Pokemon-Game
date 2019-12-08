@@ -1,10 +1,12 @@
 using namespace std;
 #include <string>
 #include <iostream>
+#include <fstream>
 
 #include "GameObject.h"
 #include "Point2D.h"
 #include "Rival.h"
+#include "Model.h"
 
 //Constructor for Rival
 Rival::Rival(string name, double speed, double hp, double phys_dmg, double magic_dmg,
@@ -22,7 +24,7 @@ Rival::Rival(string name, double speed, double hp, double phys_dmg, double magic
 //Acts much the same as the TakeHit function for pokemon
 void Rival::TakeHit(int physical_damage, int magical_damage, int defense)
 {
-	int attack_type = rand() % 1; //Should generate a number between 0 and 1
+	int attack_type = rand() % 2; //Should generate a number between 0 and 1
     int damage_choice = (attack_type) ? magical_damage : physical_damage; //Should choose an attack type based on that rand value
 	health -= (100.0 - defense) / 100 * damage_choice;
 	return;
@@ -79,7 +81,7 @@ void Rival::ShowStatus()
     {
         case ALIVE_RIVAL:
         {
-            cout << " Alive" << endl;
+            cout << " Alive with health: " << health << endl; //I added the health in order to know the result of a battle
         }
         break;
         case FAINTED_RIVAL:
@@ -100,8 +102,8 @@ bool Rival::IsAlive()
         return false;
     }   
 
-        state = ALIVE_RIVAL;
-        return true;
+    state = ALIVE_RIVAL;
+    return true;
 
 }
 
@@ -120,4 +122,49 @@ bool Rival::ShouldBeVisible()
     }
 
     return false;
+}
+
+//Need this in order to change the current_arena from the model class
+void Rival::set_current_arena(BattleArena* current_arena)
+{
+    this->current_arena = current_arena;
+}
+
+//Need this to be able to see current_arena from the model class
+BattleArena* Rival::get_current_arena()
+{
+    return this->current_arena;
+}
+
+//Saves the game
+void Rival::save(ofstream& file)
+{
+	if (file.is_open())
+	{
+		//First call GameObjects save function
+		GameObject::save(file);
+
+		//Copy the normal member variables
+		file << health << endl;
+		file << physical_damage << endl;
+		file << magical_damage << endl;
+		file << defense << endl;
+		file << stamina_cost_per_fight << endl;
+		file << name << endl;
+		file << speed << endl;
+
+		//Copy the pointers to other Game Objects' id
+		if (current_arena)
+            file << current_arena->GetId() << endl;
+        else
+            file << -1 << endl;
+
+	}
+	return;
+}
+
+//Restores the game from the save
+void Rival::restore(ifstream& file, Model& model)
+{
+	return;
 }

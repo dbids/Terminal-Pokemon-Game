@@ -5,6 +5,9 @@ using namespace std;
 #ifndef GAME_OBJECT_H
 #define GAME_OBJECT_H
 
+//Forward declaration:
+class Model;
+
 //Define all of the private and public members of the GameObject class
 class GameObject
 {
@@ -24,6 +27,10 @@ public:
 	virtual bool ShouldBeVisible() = 0;
 	void DrawSelf(char* ptr);
 	virtual bool IsAlive();
+
+	//Extra Credit Read/Write functions
+	virtual void save(ofstream& file);
+	virtual void restore(ifstream& file, Model& model);
 
 protected:
 	//Protected Member Variables

@@ -4,6 +4,10 @@ using namespace std;
 
 #ifndef BUILDING_H
 #define BUILDING_H
+
+//Forward Declaration:
+class Model;
+
 class Building: public GameObject
 {
 public:	
@@ -17,11 +21,14 @@ public:
 	void RemoveOnePokemon();
 	void ShowStatus();
 	bool ShouldBeVisible();
-	
+
+	//Extra Credit Save/Restore functions
+	void save(ofstream& file);
+	void restore(ifstream& file, Model& model);
+
 //Private member variables
 private:
 	unsigned int pokemon_count;
-	
 };
 
 #endif

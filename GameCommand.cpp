@@ -1,6 +1,7 @@
 using namespace std;
 #include <iostream>
 #include <cstdlib> //NULL
+#include <fstream>
 
 //Include created headers
 #include "Model.h"
@@ -143,14 +144,13 @@ void DoBattleCommand(Model& model, int pokemon_id, int rival_id)
     Rival* rival_of_choice = model.GetRivalPtr(rival_id);
 
     //If the pointers exist then begin battle
-    if (pokemon_of_choice && rival_of_choice)
+    if (pokemon_of_choice && rival_of_choice && rival_of_choice->GetLocation() == pokemon_of_choice->GetLocation())
     {
         cout << "Ready your pokemon, the battle begins now!!" << endl;
         if(pokemon_of_choice->ReadyBattle(rival_of_choice))
         {
            pokemon_of_choice->Update(); 
         }
-        
     }
     else
     {
@@ -175,4 +175,36 @@ void DoMoveToArenaCommand(Model& model, int pokemon_id, int arena_id)
         throw Invalid_Input("Error: Please enter a valid command");
     }
     
+}
+
+//Saves the game
+void DoSaveCommand(Model& model, string& filename)
+{
+    ofstream file(filename.c_str());
+    if (file.is_open())
+    {
+        model.save(file);
+    }
+    else
+    {
+        throw Invalid_Input("Error: Please enter a valid command");
+    }
+    file.close();
+    return;
+}
+
+//Reads the saved game
+void DoReadCommand(Model& model, string& filename)
+{
+    ifstream file(filename.c_str());
+    if (file.is_open())
+    {
+        model.restore(file);
+    }
+    else
+    {
+        throw Invalid_Input("Error: Please enter a valid command"); 
+    }
+    file.close();
+    return;      
 }

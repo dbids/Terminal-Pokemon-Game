@@ -4,6 +4,8 @@ using namespace std;
 #include <cstdlib>
 #include <ios>  //stream_size    
 #include <limits> //numeric_limits
+#include <cctype> //isspace
+#include <ios> //noskipws
 
 //Include the header files for the different classes
 #include "Point2D.h"
@@ -51,7 +53,6 @@ int main()
     View view;
 	model.ShowStatus();
     model.Display(view);
-    
     
     char command;
     do{
@@ -201,18 +202,55 @@ int main()
             int id_num;
             Point2D location;
             if(!(cin >> type))
-                throw Invalid_Input("Input Stream: Was expecting an character"); 
+                throw Invalid_Input("Input Stream: Was expecting a character"); 
             if(!(cin >> id_num))
                 throw Invalid_Input("Input Stream: Was expecting an integer");
             if(!(cin >> location.x))
-                throw Invalid_Input("Input Stream: Was expecting an double");
+                throw Invalid_Input("Input Stream: Was expecting a double");
             if(!(cin >> location.y))
-                throw Invalid_Input("Input Stream: Was expecting an double");
+                throw Invalid_Input("Input Stream: Was expecting a double");
             
             model.NewCommand(type, id_num, location);
             model.Display(view); 
         }
         break;
+        //EXTRA CREDIT SAVE AND READ COMMANDS
+        case 'S':
+        {
+            std::string filename;
+            if(cin >> filename) // >> std::noskipws
+            {
+                for (int i = 0; i < filename.length(); i++)
+                    if (i > 99 || isspace(filename.at(i)))
+                        throw Invalid_Input("Error: Filename was too long or contained whitespace");
+                
+                //Pseudo else
+                DoSaveCommand(model, filename);
+            }
+            else
+                throw Invalid_Input("Input Stream: Was expecting a string");
+        }
+        break;
+        case 'R':
+        {
+            std::string filename;
+            if(cin >> filename)
+            {
+                for (int i = 0; i < filename.length(); i++)
+                    if (i > 99 || isspace(filename.at(i)))
+                        throw Invalid_Input("Error: Filename was too long or contained whitespace");
+                
+                //Pseudo else
+                DoReadCommand(model, filename);
+            }
+            else
+                throw Invalid_Input("Input Stream: Was expecting a string");
+        }
+        break;
+        default:
+        {
+            throw Invalid_Input("Error: Please enter a valid command"); 
+        }
     }
     } //try
     catch(Invalid_Input& except)

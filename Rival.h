@@ -14,6 +14,9 @@ enum RivalStates{
     FAINTED_RIVAL = 1
 };
 
+//Forward Declaration:
+class Model;
+
 class Rival : public GameObject
 {
 public:
@@ -31,6 +34,14 @@ public:
     bool IsAlive(); //Suppossed to exist based on instructions for pokemon
     string get_name();
     bool ShouldBeVisible();
+    
+    //Added for functionality for removing or adding rivals to a given arena
+    void set_current_arena(BattleArena*);
+    BattleArena* get_current_arena();
+    
+    //Extra Credit Save/Restore functions
+    void save(ofstream& file);
+	void restore(ifstream& file, Model& model);
     
 protected:
     //Protected Member Variables

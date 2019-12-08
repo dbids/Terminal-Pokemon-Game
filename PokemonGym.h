@@ -5,6 +5,9 @@ using namespace std;
 #ifndef POKEMON_GYM_H
 #define POKEMON_GYM_H
 
+//Forward Declaration:
+class Model;
+
 class PokemonGym : public Building
 {
 public:
@@ -23,7 +26,12 @@ public:
 	bool IsBeaten();
 	void ShowStatus();
 
+	//Extra Credit Save/Restore functions
+	void save(ofstream& file);
+	void restore(ifstream& file, Model& model);
+
 private:
+	//Private Member Variables
 	unsigned int num_training_units_remaining;
 	unsigned int max_number_of_training_units;
 	unsigned int stamina_cost_per_training_unit;

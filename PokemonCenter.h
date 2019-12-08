@@ -4,6 +4,10 @@ using namespace std;
 
 #ifndef POKEMON_CENTER_H
 #define POKEMON_CENTER_H
+
+//Forward Declaration:
+class Model;
+
 class PokemonCenter: public Building
 {
 public:
@@ -20,6 +24,10 @@ public:
 	unsigned int DistributeStamina(unsigned int);
 	bool Update();
 	void ShowStatus();
+
+	//Extra Credit Save/Restore functions
+	void save(ofstream& file);
+	void restore(ifstream& file, Model& model);
 	
 private:
 	//Private Member Variables

@@ -3,6 +3,8 @@ using namespace std;
 #include <iostream>
 #include <list>
 #include <iterator>
+#include <fstream>
+#include <string>
 
 //Include user defined headers
 #include "Model.h"
@@ -21,10 +23,10 @@ Model::Model()
     
     //Declare default instances of the pokemon, center, gym, rival, and arena
     Point2D pokemon1_loc(5,1);
-    pokemon_ptrs.push_back(new Pokemon("Pikachu", 2, 20, 5, 4, 2 /*temp*/, 1, 'P', pokemon1_loc));
+    pokemon_ptrs.push_back(new Pokemon("Pikachu", 2, 20, 5, 4, 15, 1, 'P', pokemon1_loc));
 
     Point2D pokemon2_loc(10,1);
-    pokemon_ptrs.push_back(new Pokemon("Bulbasaur", 1, 20, 5, 4, 2 /*temp*/, 2, 'P', pokemon2_loc));
+    pokemon_ptrs.push_back(new Pokemon("Bulbasaur", 1, 20, 5, 4, 15, 2, 'P', pokemon2_loc));
 
     Point2D center1_loc(1,20);
     center_ptrs.push_back(new PokemonCenter(1, 1, 100, center1_loc));
@@ -40,9 +42,9 @@ Model::Model()
     //Create all three rivals in the same arena as per Piazza post @394
     Point2D rival_loc(20,20);
 	arena_ptrs.push_back(new BattleArena(3, 3, 4.0, 1, rival_loc));
-    rival_ptrs.push_back(new Rival("Gary", 1, 20, 3, 1, 50, 1, rival_loc));
-    rival_ptrs.push_back(new Rival("May", 2, 20, 1, 3, 25, 2, rival_loc));
-    rival_ptrs.push_back(new Rival("Joe", 1, 20, 2, 2, 37, 3, rival_loc));
+    rival_ptrs.push_back(new Rival("Gary", 1, 20, 3, 1, 10, 1, rival_loc));//Should probs make easier
+    rival_ptrs.push_back(new Rival("May", 2, 20, 1, 3, 15, 2, rival_loc));
+    rival_ptrs.push_back(new Rival("Joe", 1, 20, 2, 2, 20, 3, rival_loc));
 
     //Assign them all to the object_ptrs list
     object_ptrs.assign(pokemon_ptrs.begin(), pokemon_ptrs.end());
@@ -159,21 +161,10 @@ bool Model::Update()
     //Check if any GameObjects are not alive and remove them from active_ptrs
     for (list<GameObject*>::iterator aoptr = active_ptrs.begin(); aoptr != active_ptrs.end(); advance (aoptr, 1))
     {
-		cout << (*aoptr)->GetId();
-		if (!((*aoptr)->IsAlive())) //Possibly try ShouldBeVisible();
+		if (!((*aoptr)->IsAlive()))
 		{
-			if ((*aoptr) == active_ptrs.back())
-			{		
-				active_ptrs.pop_back();
-				cout << "Dead object removed" << endl;
-				aoptr = active_ptrs.end();
-			}
-			if (!((*aoptr)->IsAlive()))
-			{
-				active_ptrs.erase(aoptr, (++aoptr));
-				cout << "Dead object removed" << endl;
-				aoptr != active_ptrs.end();
-			}
+			cout << "Dead object removed" << endl;
+            aoptr = active_ptrs.erase(aoptr);
         }
     }  
     //Update all objects in the Model
@@ -273,12 +264,23 @@ void Model::NewCommand(char type, int id_num, Point2D location)
             case 'r':
                 if (id_num > pokemon_ptrs.size() && id_num < 10)
                 {
-                    rival_ptrs.push_back(new Rival("Rivaler", 1, 20, 3, 1, 50, 1, location));
+                    rival_ptrs.push_back(new Rival("Rivaler", 1, 20, 3, 1, 50, id_num, location));
                     object_ptrs.push_back(rival_ptrs.back());
                     active_ptrs.push_back(rival_ptrs.back());
                 }
                 else
                     throw Invalid_Input("Please enter valid id_num when creating a new object");
+
+                //Adds the new rival to the arena it is placed in (if placed properly)
+                for (list<BattleArena*>::iterator aptr = arena_ptrs.begin(); aptr != arena_ptrs.end(); advance(aptr,1))
+                {
+                    if (rival_ptrs.back()->GetLocation() == (*aptr)->GetLocation())
+                    {
+                        rival_ptrs.back()->set_current_arena(*aptr);
+                        (*aptr)->AddOneRival();
+                    }
+                }
+               
             break;
             default:
                 throw Invalid_Input("Please enter valid type when creating a new object");
@@ -289,4 +291,97 @@ void Model::NewCommand(char type, int id_num, Point2D location)
     {
         throw Invalid_Input("Please enter a location within the display");
     }
+}
+
+//Saves the game
+void Model::save(ofstream& file)
+{
+	if (file.is_open())
+	{
+        //First save the time
+        file << time << endl;
+        
+        //Then save the catagory information
+        file << active_ptrs.size() << endl;
+
+        for (list<GameObject*>::iterator aoptr = active_ptrs.begin(); aoptr != active_ptrs.end(); advance(aoptr,1) )
+        {
+            file << (*aoptr)->GetDisplayCode() << (*aoptr)->GetId() << endl;
+        }
+
+        //Then call each object to save
+        for (list<GameObject*>::iterator aoptr = active_ptrs.begin(); aoptr != active_ptrs.end(); advance(aoptr,1) )
+        {
+            (*aoptr)->save(file);
+        }
+
+	}
+	return;
+}
+
+//Restores the game from the save
+void Model::restore(ifstream& file)
+{
+    string line;
+    //make sure to account for upper/lower case display code
+    if (file.is_open())
+	{
+        //Get time and size
+        getline(file, line);
+        time = stoi(line);
+        getline(file, line);
+        int num_of_active_objects = stoi(line);
+        
+        //Get all the category information
+        char display_codes[num_of_active_objects];
+        int id_nums[num_of_active_objects];
+        for (int i = 0; i < num_of_active_objects; i++)
+        {
+            getline(file,line);
+            display_codes[i] = line[0];
+            id_nums[i] = static_cast<int>(line[1]);
+        }
+
+        //Based on the category information call the other restore functions and create the objects
+        for (int i = 0; i < num_of_active_objects; i++)
+        {
+            switch(display_codes[i])
+            {
+                case 'P':
+                case 'p':
+                    pokemon_ptrs.push_back(new Pokemon(display_codes[i]));
+                    pokemon_ptrs.back()->restore(file, *this);
+                break;
+                case 'A':
+                case 'a':
+
+                break;
+                case 'G':
+                case 'g':
+
+                break;
+                case 'C':
+                case 'c':
+
+                break;
+                case 'R':
+                case 'r':
+
+                break;
+                default:
+                    throw Invalid_Input("Error: reading from file");
+            }
+        }
+
+        //Assign them all to the object_ptrs list
+        object_ptrs.assign(pokemon_ptrs.begin(), pokemon_ptrs.end());
+        object_ptrs.insert(object_ptrs.end(), center_ptrs.begin(), center_ptrs.end());
+        object_ptrs.insert(object_ptrs.end(), gym_ptrs.begin(), gym_ptrs.end());
+        object_ptrs.insert(object_ptrs.end(), rival_ptrs.begin(), rival_ptrs.end());
+        object_ptrs.insert(object_ptrs.end(), arena_ptrs.begin(), arena_ptrs.end());
+
+        //Initially copy object_ptrs to active_ptrs
+        active_ptrs.assign(object_ptrs.begin(), object_ptrs.end());
+    } 
+	return;
 }

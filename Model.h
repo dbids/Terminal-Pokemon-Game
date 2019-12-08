@@ -33,6 +33,10 @@ public:
 
 	//Part 5 of PA4
 	void NewCommand(char type, int id_num, Point2D location);
+
+	//Extra Credit Save/Restore functions
+    void save(ofstream& file);
+	void restore(ifstream& file);
  
 private:
   	int time;

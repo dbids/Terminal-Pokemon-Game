@@ -3,6 +3,9 @@ using namespace std;
 #include "Point2D.h"
 #include "Vector2D.h"
 #include "GameObject.h"
+#include "Model.h"
+#include <fstream>
+#include <string>
 
 //First constructor which just takes an input code
 GameObject::GameObject(char in_code)
@@ -75,4 +78,32 @@ void GameObject::DrawSelf(char* ptr)
 bool GameObject::IsAlive()
 {
 	return true;
+}
+
+//Saves the game object members
+void GameObject::save(ofstream& file)
+{
+	file << "......" << endl; //deliniate different game objects
+	file << location.x << endl;
+	file << location.y << endl;
+	file << id_num << endl;;
+	file << display_code << endl;
+	file << static_cast<int>(state) << endl;
+}
+
+//Restores the game from the save
+void GameObject::restore(ifstream& file, Model& model)
+{
+	string line;
+	getline(file,line);
+	getline(file,line);
+	location.x = stod(line);
+	getline(file,line);
+	location.y = stod(line);
+	getline(file,line);
+	id_num = stoi(line);
+	getline(file,line);
+	display_code = line[0];
+	getline(file,line);
+	state = line[0];
 }

@@ -10,6 +10,9 @@ enum BattleArenaStates{
     NO_RIVALS_AVAILABLE = 1
 };
 
+//Forward Declaration:
+class Model;
+
 class BattleArena : public Building
 {
 public:
@@ -28,6 +31,10 @@ public:
     void ShowStatus();
 	void AddOneRival();
 	void RemoveOneRival();
+
+    //Extra Credit Save/Restore functions
+	void save(ofstream& file);
+	void restore(ifstream& file, Model& model);
     
 private:
     //Private Member Variables

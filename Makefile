@@ -17,19 +17,19 @@ Point2D.o: Point2D.h Point2D.cpp Vector2D.h
 Vector2D.o: Vector2D.cpp Vector2D.h
 	$(GCC) -c Vector2D.cpp -o Vector2D.o
 
-GameObject.o: GameObject.cpp GameObject.h Point2D.h Vector2D.h
+GameObject.o: GameObject.cpp GameObject.h Point2D.h Vector2D.h Model.h
 	$(GCC) -c GameObject.cpp -o GameObject.o
 	
-Building.o: Building.cpp Building.h GameObject.h Point2D.h
+Building.o: Building.cpp Building.h GameObject.h Point2D.h Model.h
 	$(GCC) -c Building.cpp -o Building.o
 
-PokemonCenter.o: PokemonCenter.cpp PokemonCenter.h Building.h GameObject.h Point2D.h
+PokemonCenter.o: PokemonCenter.cpp PokemonCenter.h Building.h GameObject.h Point2D.h Model.h
 	$(GCC) -c PokemonCenter.cpp -o PokemonCenter.o
 
-PokemonGym.o: PokemonGym.cpp PokemonGym.h Building.h GameObject.h Point2D.h
+PokemonGym.o: PokemonGym.cpp PokemonGym.h Building.h GameObject.h Point2D.h Model.h
 	$(GCC) -c PokemonGym.cpp -o PokemonGym.o
 
-Pokemon.o: Pokemon.cpp PokemonGym.h GameObject.h Point2D.h PokemonCenter.h Pokemon.h
+Pokemon.o: Pokemon.cpp PokemonGym.h GameObject.h Point2D.h PokemonCenter.h Pokemon.h Model.h
 	$(GCC) -c Pokemon.cpp -o Pokemon.o
 
 Model.o: Model.cpp Model.h Pokemon.h PokemonGym.h PokemonCenter.h View.h GameObject.h Point2D.h
@@ -41,11 +41,11 @@ GameCommand.o: GameCommand.cpp GameCommand.h Model.h Point2D.h View.h
 View.o: View.cpp View.h Point2D.h GameObject.h
 	$(GCC) -c View.cpp -o View.o
 
-Rival.o: Rival.cpp Rival.h GameObject.h Point2D.h
+Rival.o: Rival.cpp Rival.h GameObject.h Point2D.h Model.h
 	$(GCC) -c Rival.cpp -o Rival.o
 
-BattleArena.o: BattleArena.cpp BattleArena.h Building.h Point2D.h GameObject.h
+BattleArena.o: BattleArena.cpp BattleArena.h Building.h Point2D.h GameObject.h Model.h
 	$(GCC) -c BattleArena.cpp -o BattleArena.o
-
+	
 clean: 
-	rm $(OBJS) MakeWorld
+	rm $(OBJS) PA4

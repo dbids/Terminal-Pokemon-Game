@@ -6,6 +6,7 @@ using namespace std;
 #include <cmath>
 #include <typeinfo>
 #include <string>
+#include <fstream> //ofstream
 
 //User defined headers
 #include "Pokemon.h"
@@ -15,6 +16,7 @@ using namespace std;
 #include "PokemonGym.h"
 #include "Rival.h"
 #include "BattleArena.h"
+#include "Model.h"
 
 Pokemon::Pokemon():GameObject('p')
 {
@@ -40,7 +42,7 @@ Pokemon::Pokemon():GameObject('p')
 	store_health = health;
 	physical_damage = 5;
 	magical_damage = 4;
-	defense = 0;
+	defense = 15;
 	is_in_arena = 0;
 	target = NULL;
 	current_arena = NULL;
@@ -74,7 +76,7 @@ Pokemon::Pokemon(char in_code):GameObject(in_code)
 	store_health = health;
 	physical_damage = 5;
 	magical_damage = 4;
-	defense = 0;
+	defense = 15;
 	is_in_arena = 0;
 	target = NULL;
 	current_arena = NULL;
@@ -305,10 +307,10 @@ bool Pokemon::IsExhausted()
 	return false;
 }
 
-//Returns true if ths Pokemon is not exhausted
+//Returns true if ths Pokemon is not exhausted OR is alive
 bool Pokemon::ShouldBeVisible()
 {
-	if (!IsExhausted())
+	if (!(IsExhausted()) || IsAlive())
 		return true;
 	
 	return false;
@@ -659,7 +661,7 @@ bool Pokemon::IsAlive()
 //Dishes out the beatings
 void Pokemon::TakeHit(double physical_damage, double magical_damage, double defense)
 {
-	int attack_type = rand() % 1; //Should generate a number between 0 and 1
+	int attack_type = rand() % 2; //Should generate a number between 0 and 1
     int damage_choice = (attack_type) ? magical_damage : physical_damage; //Should choose an attack type based on that rand value
 	health -= (100.0 - defense) / 100 * damage_choice;
 	return;
@@ -708,7 +710,7 @@ bool Pokemon::StartBattle()
 	bool switcher = 0;
 	while (health > 0 && target->get_health() > 0)
 	{
-		bool switcher = ~switcher;
+		bool switcher = !switcher;
 		if (switcher)
 		{
 			//Rival attacks in this loop
@@ -722,7 +724,7 @@ bool Pokemon::StartBattle()
 			//You attack rival in this loop
 			cout << "You attack " << target->get_name() << endl;
 			double health_before = target->get_health();
-			TakeHit(target->get_phys_dmg(), target->get_magic_dmg(), target->get_defense());
+			target->TakeHit(target->get_phys_dmg(), target->get_magic_dmg(), target->get_defense());
 			cout << "Nice!! You hit him for " << fabs(health_before - target->get_health()) << endl;
 		}
 	}
@@ -762,4 +764,123 @@ void Pokemon::StartMovingToArena(BattleArena* arena)
 		state = MOVING_TO_ARENA;
 		cout << display_code << id_num << ": On my way to the arena " << current_arena->GetId() << "." << endl;
 	}
+}
+
+//Saves the game
+void Pokemon::save(ofstream& file)
+{
+	if (file.is_open())
+	{
+		//First call GameObjects save function
+		GameObject::save(file);
+
+		//Copy the normal member variables
+		file << speed << endl;
+		file << is_in_gym << endl;
+		file << is_in_center << endl;
+		file << stamina << endl;
+		file << experience_points << endl;
+		file << pokemon_dollars << endl;
+		file << training_units_to_buy << endl;
+		file << stamina_points_to_buy << endl;
+		file << name << endl;
+		file << health << endl;
+		file << store_health << endl;
+		file << physical_damage << endl;
+		file << magical_damage << endl;
+		file << defense << endl;
+		file << is_in_arena << endl;
+		file << destination.x << endl; 	//Point2D destination(x,y)
+		file << destination.y << endl;
+		file << delta.x << endl;		//Vector2D delta(x,y)
+		file << delta.y << endl;
+
+		//Copy the pointers to other Game Objects id
+		if (current_arena)
+			file << current_arena->GetId() << endl;
+		else
+			file << -1 << endl;
+		if (current_center)
+			file << current_center->GetId() << endl;
+		else
+			file << -1 << endl;		
+		if (current_gym)
+			file << current_gym->GetId() << endl;
+		else
+			file << -1 << endl;
+		if (target )
+			file << target->GetId() << endl;
+		else
+			file << -1 << endl;
+	}
+	return;
+}
+
+//Restores the game from the save
+void Pokemon::restore(ifstream& file, Model& model)
+{
+	//First restore the game object
+	GameObject::restore(file, model);
+	
+	string line;
+	
+	cout << "p";
+	//First do the normal variables
+	getline(file,line);
+	speed = stod(line, NULL);
+	getline(file,line);
+	is_in_gym = static_cast<bool>(stoi(line));
+	getline(file,line);
+	is_in_center = static_cast<bool>(stoi(line));
+	getline(file,line);
+	stamina = stoul(line);
+	getline(file,line);
+	experience_points = stoul(line);
+	getline(file,line);
+	pokemon_dollars = stod(line, NULL);
+	getline(file,line);
+	training_units_to_buy = stoul(line);
+	getline(file,line);
+	stamina_points_to_buy = stoul(line);
+	getline(file,line);
+	name = line;
+	getline(file,line);
+	health = stod(line, NULL);
+	getline(file,line);
+	store_health = stod(line, NULL);
+	getline(file,line);
+	physical_damage = stod(line, NULL);
+	getline(file,line);
+	magical_damage = stod(line, NULL);
+	getline(file,line);
+	defense = stod(line, NULL);
+	cout << "a";
+	getline(file,line);
+	is_in_arena = static_cast<bool>(stoi(line));
+	getline(file,line);
+	destination.x = stod(line);
+	getline(file,line);
+	destination.y = stod(line);
+	getline(file,line);
+	delta.x = stod(line);
+	getline(file,line);
+	delta.y = stod(line);
+	getline(file,line);
+
+	//Then do the pointers to variables
+	getline(file,line);//current_arena
+	cout << "s";
+	if (stoi(line) != -1) 
+		current_arena = model.GetArenaPtr(stoi(line));
+	getline(file,line); //current_center
+	if (stoi(line) != -1)
+		current_center = model.GetPokemonCenterPtr(stoi(line));
+	getline(file,line); //current_gym
+	if (stoi(line) != -1)
+		current_gym = model.GetPokemonGymPtr(stoi(line));
+	getline(file,line); //target
+	if (stoi(line) != -1)
+		target = model.GetRivalPtr(stoi(line));
+
+	return;
 }

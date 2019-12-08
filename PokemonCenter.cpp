@@ -4,6 +4,8 @@ using namespace std;
 #include "Building.h"
 #include "GameObject.h"
 #include <iostream>
+#include <fstream>
+#include "Model.h"
 
 //Define the default constructor for PokemonCenter with inherited values from Building
 Point2D default_loc;
@@ -107,3 +109,25 @@ void PokemonCenter::ShowStatus()
 	cout << "	Pokemon dollars per stamina point: " << dollar_cost_per_stamina_point << endl;
 	cout << "	Has " << num_stamina_points_remaining << " stamina point(s) remaining." << endl;
 }	
+
+//Saves the game
+void PokemonCenter::save(ofstream& file)
+{
+	if (file.is_open())
+	{
+		//First call Building's save function
+		Building::save(file);
+
+		//Copy the normal member variables
+		file << stamina_capacity << endl;
+		file << num_stamina_points_remaining << endl;
+		file << dollar_cost_per_stamina_point << endl;
+	}
+	return;
+}
+
+//Restores the game from the save
+void PokemonCenter::restore(ifstream& file, Model& model)
+{
+	return;
+}

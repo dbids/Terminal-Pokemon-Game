@@ -28,6 +28,9 @@ enum PokemonStates {
     FAINTED             = 12
 };
 
+//Forward Declaration:
+class Model;
+
 class Pokemon : public GameObject
 {
 public:
@@ -58,6 +61,10 @@ public:
     bool ReadyBattle(Rival* in_target); //Purposely changed to bool to check if successful in game command
     bool StartBattle();
     void StartMovingToArena(BattleArena*);
+
+    //Extra Credit Save/Restore functions
+    void save(ofstream& file);
+	void restore(ifstream& file, Model& model);
 
 protected:
     //Protected Member Functions

@@ -1,11 +1,13 @@
 using namespace std;
 #include <iostream>
+#include <fstream>
 
 //User defined headers
 #include "BattleArena.h"
 #include "Building.h"
 #include "Point2D.h"
 #include "GameObject.h"
+#include "Model.h"
 
 //Constructors / Destructors
 BattleArena::BattleArena():Building('A', 1, Point2D(0,0))
@@ -118,4 +120,28 @@ void BattleArena::AddOneRival()
 void BattleArena::RemoveOneRival()
 {
 	num_rivals_remaining--;
+}
+
+//Saves the game
+void BattleArena::save(ofstream& file)
+{
+	if (file.is_open())
+	{
+		//First call Building's save function
+		Building::save(file);
+
+		//Copy the normal member variables
+		file << max_num_rivals << endl;
+		file << num_rivals_remaining << endl;
+		file << dollar_cost_per_fight << endl;
+        file << stamina_cost_per_fight << endl;
+		file << pokemon_count << endl;
+	}
+	return;
+}
+
+//Restores the game from the save
+void BattleArena::restore(ifstream& file, Model& model)
+{
+	return;
 }

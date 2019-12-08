@@ -17,5 +17,6 @@ using namespace std;
   void DoRunCommand(Model& model, View& view);
   void DoBattleCommand(Model& model, int pokemon_id, int rival_id);
   void DoMoveToArenaCommand(Model& model, int pokemon_id, int arena_id);
-  
+  void DoSaveCommand (Model& model, string& file);
+  void DoReadCommand (Model& model, string& file);
 #endif // GAMECOMMAND_H

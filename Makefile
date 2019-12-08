@@ -1,7 +1,7 @@
 GCC = g++ -std=c++11 -g
 
-OBJS = main.o Point2D.o Vector2D.o GameObject.o Building.o PokemonCenter.o PokemonGym.o Pokemon.o Model.o GameCommand.o View.o Rival.o BattleArena.o
-HEADS = Point2D.h Vector2D.h GameObject.h Building.h PokemonCenter.h PokemonGym.h Pokemon.h Model.h GameCommand.h View.h Rival.h BattleArena.h Input_Handling.h
+OBJS = main.o Point2D.o Vector2D.o GameObject.o Building.o PokemonCenter.o PokemonGym.o Pokemon.o Model.o GameCommand.o View.o Rival.o BattleArena.o Attack_Types.o
+HEADS = Point2D.h Vector2D.h GameObject.h Building.h PokemonCenter.h PokemonGym.h Pokemon.h Model.h GameCommand.h View.h Rival.h BattleArena.h Input_Handling.h Attack_Types.h
 
 default: PA4
 
@@ -46,6 +46,9 @@ Rival.o: Rival.cpp Rival.h GameObject.h Point2D.h Model.h
 
 BattleArena.o: BattleArena.cpp BattleArena.h Building.h Point2D.h GameObject.h Model.h
 	$(GCC) -c BattleArena.cpp -o BattleArena.o
-	
+
+Attack_Types.o: Attack_Types.cpp Attack_Types.h
+	$(GCC) -c Attack_Types.cpp -o Attack_Types.o	
+
 clean: 
 	rm $(OBJS) PA4

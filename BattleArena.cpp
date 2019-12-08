@@ -1,6 +1,7 @@
 using namespace std;
 #include <iostream>
 #include <fstream>
+#include <string>
 
 //User defined headers
 #include "BattleArena.h"
@@ -143,5 +144,24 @@ void BattleArena::save(ofstream& file)
 //Restores the game from the save
 void BattleArena::restore(ifstream& file, Model& model)
 {
-	return;
+	string line;
+
+    //First restore the parent class
+	Building::restore(file, model);
+
+    //Restore the state properly
+    state = (state == '1') ? RIVALS_AVAILABLE : NO_RIVALS_AVAILABLE;
+
+    getline(file,line);
+    max_num_rivals = stoul(line);
+    getline(file,line);
+    num_rivals_remaining = stoul(line);
+    getline(file,line);
+    dollar_cost_per_fight = stod(line);
+    getline(file,line);
+    stamina_cost_per_fight = stoul(line);
+    getline(file,line);
+    pokemon_count = stoul(line);
+
+    return;
 }

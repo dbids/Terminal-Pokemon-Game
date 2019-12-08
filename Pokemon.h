@@ -7,6 +7,7 @@ using namespace std;
 #include "PokemonGym.h"
 #include "Rival.h"
 #include "BattleArena.h"
+#include "Attack_Types.h"
 
 #ifndef POKEMON_H
 #define POKEMON_H
@@ -57,7 +58,7 @@ public:
 
     //New PA4 public members
     bool IsAlive();
-    void TakeHit(double, double, double);
+    void TakeHit(double defense, Attack_Types& attack_choice); //changed for extra credit
     bool ReadyBattle(Rival* in_target); //Purposely changed to bool to check if successful in game command
     bool StartBattle();
     void StartMovingToArena(BattleArena*);
@@ -65,6 +66,10 @@ public:
     //Extra Credit Save/Restore functions
     void save(ofstream& file);
 	void restore(ifstream& file, Model& model);
+
+    //Extra Credit ASCII print function
+    void printBattlePokemon();
+    void printPokemon();
 
 protected:
     //Protected Member Functions
@@ -96,6 +101,9 @@ private:
     PokemonGym* current_gym;
     Point2D destination;
     Vector2D delta;
+
+    //Extra Credit Attack List
+    Attack_Types attack_list[2];
 };
 
 //Non Member Function

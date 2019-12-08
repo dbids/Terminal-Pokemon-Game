@@ -129,5 +129,17 @@ void PokemonCenter::save(ofstream& file)
 //Restores the game from the save
 void PokemonCenter::restore(ifstream& file, Model& model)
 {
+	//First restore the parent class
+	Building::restore(file, model);
+
+    string line;
+
+    getline(file,line);
+    stamina_capacity = stoul(line);
+    getline(file,line);
+    num_stamina_points_remaining = stoul(line);
+    getline(file,line);
+	dollar_cost_per_stamina_point = stod(line);
+	
 	return;
 }

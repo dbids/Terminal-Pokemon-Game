@@ -5,6 +5,7 @@ using namespace std;
 #include "Model.h"
 #include <iostream>
 #include <fstream>
+#include <string>
 
 //Create the default constructor with all of the default values for the member variables including those inherited from GameObject
 Building::Building():GameObject('B')
@@ -74,5 +75,9 @@ void Building::save(ofstream& file)
 //Restores the game from the save
 void Building::restore(ifstream& file, Model& model)
 {
+	GameObject::restore(file, model);
+	string line;
+	getline(file, line);
+	pokemon_count = stoul(line);
 	return;
 }

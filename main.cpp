@@ -242,6 +242,10 @@ int main()
                 
                 //Pseudo else
                 DoReadCommand(model, filename);
+
+                model.ShowStatus();
+                model.Display(view); 
+                cout << "Save loaded sucessfully, keep going from where you left off!" << endl;
             }
             else
                 throw Invalid_Input("Input Stream: Was expecting a string");
@@ -251,6 +255,7 @@ int main()
         {
             throw Invalid_Input("Error: Please enter a valid command"); 
         }
+       
     }
     } //try
     catch(Invalid_Input& except)

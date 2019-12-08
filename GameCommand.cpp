@@ -190,6 +190,8 @@ void DoSaveCommand(Model& model, string& filename)
         throw Invalid_Input("Error: Please enter a valid command");
     }
     file.close();
+
+    cout << "Game Saved Successfully! To quit please enter 'q' or continue playing" << endl;
     return;
 }
 
@@ -206,5 +208,6 @@ void DoReadCommand(Model& model, string& filename)
         throw Invalid_Input("Error: Please enter a valid command"); 
     }
     file.close();
+
     return;      
 }

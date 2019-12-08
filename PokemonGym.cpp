@@ -5,6 +5,7 @@ using namespace std;
 #include "Model.h"
 #include <iostream>
 #include <fstream>
+#include <string>
 
 //Defualt Constructor
 Point2D default_location;
@@ -148,5 +149,21 @@ void PokemonGym::save(ofstream& file)
 //Restores the game from the save
 void PokemonGym::restore(ifstream& file, Model& model)
 {
+	//First restore the parent class
+	Building::restore(file, model);
+
+    string line;
+
+    getline(file,line);
+    num_training_units_remaining = stoul(line);
+    getline(file,line);
+    max_number_of_training_units = stoul(line);
+    getline(file,line);
+	stamina_cost_per_training_unit = stoul(line);
+    getline(file,line);
+    dollar_cost_per_training_unit = stod(line);
+    getline(file,line);
+    experience_points_per_training_unit = stoul(line);
+
 	return;
 }

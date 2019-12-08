@@ -17,6 +17,7 @@ using namespace std;
 #include "Rival.h"
 #include "BattleArena.h"
 #include "Model.h"
+#include "Attack_Types.h"
 
 Pokemon::Pokemon():GameObject('p')
 {
@@ -40,12 +41,19 @@ Pokemon::Pokemon():GameObject('p')
 	//New PA4 default values
 	health = 20;
 	store_health = health;
-	physical_damage = 5;
-	magical_damage = 4;
+	physical_damage = 5; //left but not used with extra credit
+	magical_damage = 4;//left but not used with extra credit
 	defense = 15;
 	is_in_arena = 0;
 	target = NULL;
 	current_arena = NULL;
+
+	//Add attack types
+	attack_list[0] = Attack_Types();
+	attack_list[1] = Attack_Types();
+
+	//Print it!
+	printPokemon();
 }
 
 Pokemon::Pokemon(char in_code):GameObject(in_code)
@@ -74,12 +82,19 @@ Pokemon::Pokemon(char in_code):GameObject(in_code)
 	//New PA4 default values
 	health = 20;
 	store_health = health;
-	physical_damage = 5;
-	magical_damage = 4;
+	physical_damage = 5;//left but not used with extra credit
+	magical_damage = 4;//left but not used with extra credit
 	defense = 15;
 	is_in_arena = 0;
 	target = NULL;
 	current_arena = NULL;
+
+	//Add attack types
+	attack_list[0] = Attack_Types();
+	attack_list[1] = Attack_Types();
+
+	//Print it!
+	printPokemon();
 }
 
 Pokemon::Pokemon(string in_name, double in_speed, double hp, double phys_dmg, 
@@ -106,12 +121,19 @@ Pokemon::Pokemon(string in_name, double in_speed, double hp, double phys_dmg,
 	//New PA4 default values
 	health = hp;
 	store_health = health;
-	physical_damage = phys_dmg;
-	magical_damage = magic_dmg;
+	physical_damage = phys_dmg;//left but not used with extra credit
+	magical_damage = magic_dmg;//left but not used with extra credit
 	defense = def;
 	is_in_arena = 0;
 	target = NULL;
 	current_arena = NULL;
+
+	//Add attack types for pickachu/bulbasaur
+	attack_list[0] = Attack_Types(in_name);
+	attack_list[1] = Attack_Types(in_name);
+
+	//Print it!
+	printPokemon();
 }
 
 //Default constructor which prints
@@ -650,22 +672,29 @@ string Pokemon::GetName()
 //Returns true of the state is not FAINTED
 bool Pokemon::IsAlive()
 {
-	if (state != FAINTED)
-	{
-		return true;
-	}
-
-	return false;
+	return state != FAINTED;
 }
 
-//Dishes out the beatings
-void Pokemon::TakeHit(double physical_damage, double magical_damage, double defense)
+//Dishes out the beatings (REVISED)
+void Pokemon::TakeHit(double defense, Attack_Types& attack_choice)
+{
+	//Should choose a damage type based on that move
+    int damage_choice = (rand() % 2) ? attack_choice.getPhyDamage() : attack_choice.getMagDamage();
+
+	//Decrements the health based on the choice of move and damage type
+	health -= (100.0 - defense) / 100 * damage_choice;
+
+	return;
+}
+
+//Old Version of TakeHit from before the addition of the extra credit attack types
+/*void Pokemon::TakeHit(double physical_damage, double magical_damage, double defense)
 {
 	int attack_type = rand() % 2; //Should generate a number between 0 and 1
     int damage_choice = (attack_type) ? magical_damage : physical_damage; //Should choose an attack type based on that rand value
 	health -= (100.0 - defense) / 100 * damage_choice;
 	return;
-}
+}*/
 
 //Sets up the Battle, I made this bool in order to improve game command functionallity
 bool Pokemon::ReadyBattle(Rival* in_target)
@@ -708,9 +737,82 @@ bool Pokemon::ReadyBattle(Rival* in_target)
 bool Pokemon::StartBattle()
 {
 	bool switcher = 0;
+	Attack_Types attack_choice;
+	double health_before = 0.0;
 	while (health > 0 && target->get_health() > 0)
 	{
-		bool switcher = !switcher;
+		switcher = !switcher;
+		if (switcher)
+		{
+			//Rival attacks in this loop
+			cout << "Rival attacks " << name << endl;
+			target->printBattlePokemon();
+			printBattlePokemon();
+
+			health_before = health;
+			attack_choice = target->attack_list[rand() % 2];
+			TakeHit(this->defense, attack_choice);
+
+			cout << "OOF, he hit you with " << attack_choice.getName() << " for " << fabs(health_before - health) << endl;
+			attack_choice.printAttack();	
+		}
+		else
+		{
+			//You attack rival in this loop
+			cout << "You attack " << target->get_name() << endl;
+			printBattlePokemon();
+			target->printBattlePokemon();
+
+			health_before = target->get_health();
+			attack_choice = attack_list[rand() % 2];
+			TakeHit(target->get_defense(), attack_choice);
+
+			cout << "Nice!! You hit him with " << attack_choice.getName() << " for " << fabs(health_before - target->get_health()) << endl;
+			attack_choice.printAttack();
+		}
+	}
+	//Print the outcome
+	if (health <= 0)
+	{
+		std::cout << R"( 
+                                     /$$                              
+                                    | $$                              
+ /$$   /$$  /$$$$$$  /$$   /$$      | $$  /$$$$$$   /$$$$$$$  /$$$$$$ 
+| $$  | $$ /$$__  $$| $$  | $$      | $$ /$$__  $$ /$$_____/ /$$__  $$
+| $$  | $$| $$  \ $$| $$  | $$      | $$| $$  \ $$|  $$$$$$ | $$$$$$$$
+| $$  | $$| $$  | $$| $$  | $$      | $$| $$  | $$ \____  $$| $$_____/
+|  $$$$$$$|  $$$$$$/|  $$$$$$/      | $$|  $$$$$$/ /$$$$$$$/|  $$$$$$$
+ \____  $$ \______/  \______/       |__/ \______/ |_______/  \_______/
+ /$$  | $$                                                            
+|  $$$$$$/                                                            
+ \______/)" << '\n';
+		return false;
+	}
+	else
+	{
+		std::cout << R"( 
+                                                   /$$          
+                                                  |__/          
+ /$$   /$$  /$$$$$$  /$$   /$$       /$$  /$$  /$$ /$$ /$$$$$$$ 
+| $$  | $$ /$$__  $$| $$  | $$      | $$ | $$ | $$| $$| $$__  $$
+| $$  | $$| $$  \ $$| $$  | $$      | $$ | $$ | $$| $$| $$  \ $$
+| $$  | $$| $$  | $$| $$  | $$      | $$ | $$ | $$| $$| $$  | $$
+|  $$$$$$$|  $$$$$$/|  $$$$$$/      |  $$$$$/$$$$/| $$| $$  | $$
+ \____  $$ \______/  \______/        \_____/\___/ |__/|__/  |__/
+ /$$  | $$                                                      
+|  $$$$$$/                                                      
+ \______/ )" << '\n';
+	}
+		return true;
+}
+
+//Old Version of StartBattle() from before the addition of the extra credit attack types and printing
+/*bool Pokemon::StartBattle()
+{
+	bool switcher = 0;
+	while (health > 0 && target->get_health() > 0)
+	{
+		switcher = !switcher;
 		if (switcher)
 		{
 			//Rival attacks in this loop
@@ -728,7 +830,7 @@ bool Pokemon::StartBattle()
 			cout << "Nice!! You hit him for " << fabs(health_before - target->get_health()) << endl;
 		}
 	}
-}
+}*/
 
 //Helps the move to arena function
 void Pokemon::StartMovingToArena(BattleArena* arena)
@@ -812,6 +914,15 @@ void Pokemon::save(ofstream& file)
 			file << target->GetId() << endl;
 		else
 			file << -1 << endl;
+
+		//Additional things for the Attack_Types class
+		file << attack_list[0].getName() << endl;
+		file << attack_list[0].getPhyDamage() << endl;
+		file << attack_list[0].getMagDamage() << endl;
+		file << attack_list[1].getName() << endl;
+		file << attack_list[1].getPhyDamage() << endl;
+		file << attack_list[1].getMagDamage() << endl;
+		
 	}
 	return;
 }
@@ -819,19 +930,38 @@ void Pokemon::save(ofstream& file)
 //Restores the game from the save
 void Pokemon::restore(ifstream& file, Model& model)
 {
+	string line;
+	
 	//First restore the game object
 	GameObject::restore(file, model);
 	
-	string line;
+	//Restore the state properly
+	getline(file,line);
+    int state_temp = stoi(line);
+	switch (state_temp)
+	{
+		case 0: state = STOPPED;			break;
+		case 1: state = MOVING;				break;
+		case 2: state = EXHAUSTED;			break;
+		case 3: state = IN_GYM;				break;
+		case 4: state = IN_CENTER;			break;
+		case 5: state = MOVING_TO_GYM;		break;
+		case 6: state = MOVING_TO_CENTER;	break;
+		case 7: state = TRAINING_IN_GYM;	break;
+		case 8: state = RECOVERING_STAMINA;	break;
+		case 9: state = IN_ARENA;			break;
+		case 10: state = MOVING_TO_ARENA;	break;
+		case 11: state = BATTLE;			break;
+		case 12: state = FAINTED; 			break;
+	}
 	
-	cout << "p";
 	//First do the normal variables
 	getline(file,line);
 	speed = stod(line, NULL);
 	getline(file,line);
-	is_in_gym = static_cast<bool>(stoi(line));
+	is_in_gym = (line == "1") ? true : false;
 	getline(file,line);
-	is_in_center = static_cast<bool>(stoi(line));
+	is_in_center = (line == "1") ? true : false;
 	getline(file,line);
 	stamina = stoul(line);
 	getline(file,line);
@@ -854,9 +984,8 @@ void Pokemon::restore(ifstream& file, Model& model)
 	magical_damage = stod(line, NULL);
 	getline(file,line);
 	defense = stod(line, NULL);
-	cout << "a";
 	getline(file,line);
-	is_in_arena = static_cast<bool>(stoi(line));
+	is_in_arena = (line=="1") ? true : false;
 	getline(file,line);
 	destination.x = stod(line);
 	getline(file,line);
@@ -865,22 +994,196 @@ void Pokemon::restore(ifstream& file, Model& model)
 	delta.x = stod(line);
 	getline(file,line);
 	delta.y = stod(line);
-	getline(file,line);
 
 	//Then do the pointers to variables
-	getline(file,line);//current_arena
-	cout << "s";
-	if (stoi(line) != -1) 
+	getline(file,line);//current_arena 
+	if (line != "-1")
 		current_arena = model.GetArenaPtr(stoi(line));
 	getline(file,line); //current_center
-	if (stoi(line) != -1)
+	if (line != "-1")
 		current_center = model.GetPokemonCenterPtr(stoi(line));
 	getline(file,line); //current_gym
-	if (stoi(line) != -1)
+	if (line != "-1")
 		current_gym = model.GetPokemonGymPtr(stoi(line));
 	getline(file,line); //target
-	if (stoi(line) != -1)
+	if (line != "-1")
 		target = model.GetRivalPtr(stoi(line));
 
+	//Additional things for the Attack_Types class
+	getline(file,line);
+	string temp_name = line;
+	getline(file,line);
+	double temp_mag_dmg = stod(line);
+	getline(file,line);
+	double temp_phy_dmg = stod(line);
+	attack_list[0] = Attack_Types(temp_name, temp_mag_dmg, temp_phy_dmg);
+	getline(file,line);
+	temp_name = line;
+	getline(file,line);
+	temp_mag_dmg = stod(line);
+	getline(file,line);
+	temp_phy_dmg = stod(line);
+	attack_list[1] = Attack_Types(temp_name, temp_mag_dmg, temp_phy_dmg);
+
+	return;
+}
+
+//prints the Pokemon upon creation
+void Pokemon::printPokemon()
+{
+	if (name == "Bulbasaur")
+	{
+		std::cout << R"(                                           
+                        _,.------....___,.' ',.-.
+                     ,-'          _,.--"        |
+                   ,'         _.-'              .
+                  /   ,     ,'                   `
+                 .   /     /                     ``.
+                 |  |     .                       \.\
+       ____      |___._.  |       __               \ `.
+     .'    `---""       ``"-.--"'`  \               .  \
+    .  ,            __               `              |   .
+    `,'         ,-"'  .               \             |    L
+   ,'          '    _.'                -._          /    |
+  ,`-.    ,".   `--'                      >.      ,'     |
+ . .'\'   `-'       __    ,  ,-.         /  `.__.-      ,'
+ ||:, .           ,'  ;  /  / \ `        `.    .      .'/
+ j|:D  \          `--'  ' ,'_  . .         `.__, \   , /
+/ L:_  |                 .  "' :_;                `.'.'
+.    ""'                  """""'                    V
+ `.                                 .    `.   _,..  `
+   `,_   .    .                _,-'/    .. `,'   __  `
+    ) \`._        ___....----"'  ,'   .'  \ |   '  \  .
+   /   `. "`-.--"'         _,' ,'     `---' |    `./  |
+  .   _  `""'--.._____..--"   ,             '         |
+  | ." `. `-.                /-.           /          ,
+  | `._.'    `,_            ;  /         ,'          .
+ .'          /| `-.        . ,'         ,           ,
+ '-.__ __ _,','    '`-..___;-...__   ,.'\ ____.___.'
+ `"^--'..'   '-`-^-'"--    `-^-'`.''"""""`.,^.`.--' )" << '\n';
+	}
+	else if (name == "Pikachu")
+	{
+	std::cout << R"( 
+:::,
+ '::::'._
+   '.    '.                        __.,,.
+     '.    '.                _..-'''':::"
+       \     \,.--""""--.,-''      _:'
+   /\   \  .               .    .-'
+  /  \   \                   ':'
+ /    \  :                     :
+/      \:                       :
+\       :                       :
+ \      :      ,--,         ,-,  :
+  \    :      |(_):|       |():| :
+   \   :     __'--'   __    '-'_  :
+    \  :    /  \      \/      / \ :
+     \  :  (    )             \_/ :
+  .-'' . :  \__/   '--''--'      :
+  \  . .-:'.                   .:
+   \' :| :  '-.__      ___...-' :
+    \::|:        ''''''          '.
+  .,:::':  :                       '.
+   \::\:   :                         '._
+    \::    :     /             '-._     '.
+     \:    :    /              .   :-._ :-'
+      :    :   /               :   :  ''
+      :   .'   )'.             :   :
+       :  :  .'   '.          :   :
+        : '..'      :      _.' _.:
+         '._        :..---'\'''  _)
+            '':---''_)      '-'-'
+               '-'-'  )" << '\n';
+	}
+	else 
+	{
+std::cout << R"(
+                 ."-,.__
+                 `.     `.  ,
+              .--'  .._,'"-' `.
+             .    .'         `'
+             `.   /          ,'
+               `  '--.   ,-"'
+                `"`   |  \
+                   -. \, |
+                    `--Y.'      ___.
+                         \     L._, \
+               _.,        `.   <  <\                _
+             ,' '           `, `.   | \            ( `
+          ../, `.            `  |    .\`.           \ \_
+         ,' ,..  .           _.,'    ||\l            )  '".
+        , ,'   \           ,'.-.`-._,'  |           .  _._`.
+      ,' /      \ \        `' ' `--/   | \          / /   ..\
+    .'  /        \ .         |\__ - _ ,'` `        / /     `.`.
+    |  '          ..         `-...-"  |  `-'      / /        . `.
+    | /           |L__           |    |          / /          `. `.
+   , /            .   .          |    |         / /             ` `
+  / /          ,. ,`._ `-_       |    |  _   ,-' /               ` \
+ / .           \"`_/. `-_ \_,.  ,'    +-' `-'  _,        ..,-.    \`.
+.  '         .-f    ,'   `    '.       \__.---'     _   .'   '     \ \
+' /          `.'    l     .' /          \..      ,_|/   `.  ,'`     L`
+|'      _.-""` `.    \ _,'  `            \ `.___`.'"`-.  , |   |    | \
+||    ,'      `. `.   '       _,...._        `  |    `/ '  |   '     .|
+||  ,'          `. ;.,.---' ,'       `.   `.. `-'  .-' /_ .'    ;_   ||
+|| '              V      / /           `   | `   ,'   ,' '.    !  `. ||
+||/            _,-------7 '              . |  `-'    l         /    `||
+. |          ,' .-   ,' ||               | .-.        `.      .'     ||
+ `'        ,'    `".'    |               |    `.        '. -.'       `'
+          /      ,'      |               |,'    \-.._,.'/'
+          .     /        .               .       \    .''
+        .`.    |         `.             /         :_,'.'
+          \ `...\   _     ,'-.        .'         /_.-'
+           `-.__ `,  `'   .  _.>----''.  _  __  /
+                .'        /"'          |  "'   '_
+               /_|.-'\ ,".             '.'`__'-( \
+                 / ,"'"\,'               `/  `-.|" 
+                 )" << '\n';
+	}
+
+	return;
+}
+//prints the Pokemon during battle
+void Pokemon::printBattlePokemon()
+{
+	if (name == "Bulbasaur")
+	{
+	std::cout << R"(
+______________________________________________________________________
+[]   '         /   /  ..   `.  `./ | ;`.'   ,"" ,.  `.   \      |   []
+[]    `.     ,'  ,'   | |\  |      "       |  ,'\ |   \   `    ,L   []
+[]    /|`.  /   '     | `-| '                /`-' |    L   `._/  \  []
+[]   / | .`|   |  .   `._.'                 `.__,'   .  |    |  (`  []
+[]  '-""-'_|   `. `.__,.____     .   _,        ____ ,-  j    ".-'"' []
+[]         \     `-.  \/.   `"-.._   _,.---'""\/  "_,.'     /-'     []
+======================================================================
+	)" << '\n';
+	}
+	else if (name == "Pikachu")
+	{
+	std::cout << R"(
+______________________________________________________________________
+[] \ \\ \   `-+_       '-   __           ,--. ./             / // / []
+[]\ \ \\ \      `-.._     .:  ).        (`--"| \            / // / /[]
+[]\\ \ \\ \          7    | `" |         `...'  \          / // / //[]
+[] \\ \ \\ \         |     `--'     '+"        ,". ,""-   / // / // []
+[]\ \\ \ \\ \   _.   |   _...        .____     | |/    ' / // / // /[]
+[] \ \\ \ \\ \ \' `-.\  .    `.  '--"   /      `./     j/ // / // / []
+======================================================================
+	)" << '\n';
+	}
+	else
+	{
+	std::cout << R"(
+______________________________________________________________________
+[]         ,' '      `, `.   | \       ( `            `.    `.  ,   []
+[]      ../, `.       `  |    .\`.      \ \_       .--'  ._,'"-' `. []
+[]     ,' ,..  .      _.,'    ||\l       )  '".   .    .'        `' []
+[]    , ,'   \      ,'.-.`-._,'  |      .  _._`.  `.   /         ,' []
+[]  ,' /      \ \   `' ' `--/   | \     / /   ..\   `  '--.  ,-"'   []
+[].'  /        \ .    |\__ - _ ,'` `   / /     `.`.  `"`   | \      []
+======================================================================
+	)" << '\n';
+	}
 	return;
 }

@@ -254,7 +254,7 @@ void Model::NewCommand(char type, int id_num, Point2D location)
             case 'p':
                 if (id_num > pokemon_ptrs.size() && id_num < 10)
                 {
-                    pokemon_ptrs.push_back(new Pokemon("God", 1, 200, 100, 100, 50, id_num, 'P', location));
+                    pokemon_ptrs.push_back(new Pokemon("Charizard", 1, 200, 100, 100, 50, id_num, 'P', location));
                     object_ptrs.push_back(pokemon_ptrs.back());
                     active_ptrs.push_back(pokemon_ptrs.back());
                 }
@@ -322,8 +322,17 @@ void Model::save(ofstream& file)
 //Restores the game from the save
 void Model::restore(ifstream& file)
 {
+    //Clear the existing model data
+    active_ptrs.clear();
+    object_ptrs.clear();
+    pokemon_ptrs.clear();
+    center_ptrs.clear();
+    gym_ptrs.clear();
+    arena_ptrs.clear();
+    rival_ptrs.clear();
+
     string line;
-    //make sure to account for upper/lower case display code
+
     if (file.is_open())
 	{
         //Get time and size
@@ -339,10 +348,10 @@ void Model::restore(ifstream& file)
         {
             getline(file,line);
             display_codes[i] = line[0];
-            id_nums[i] = static_cast<int>(line[1]);
+            id_nums[i] = static_cast<int>(line[1])-'0';
         }
 
-        //Based on the category information call the other restore functions and create the objects
+        //Based on the category information create the objects
         for (int i = 0; i < num_of_active_objects; i++)
         {
             switch(display_codes[i])
@@ -350,23 +359,61 @@ void Model::restore(ifstream& file)
                 case 'P':
                 case 'p':
                     pokemon_ptrs.push_back(new Pokemon(display_codes[i]));
-                    pokemon_ptrs.back()->restore(file, *this);
                 break;
                 case 'A':
                 case 'a':
-
+                    arena_ptrs.push_back(new BattleArena(0, 0, 0, id_nums[i], Point2D(0,0)));
                 break;
                 case 'G':
                 case 'g':
-
+                    gym_ptrs.push_back(new PokemonGym(0, 0, 0, 0, id_nums[i], Point2D(0,0)));
                 break;
                 case 'C':
                 case 'c':
-
+                    center_ptrs.push_back(new PokemonCenter(id_nums[i], 0, 0, Point2D(0,0)));
                 break;
                 case 'R':
                 case 'r':
-
+                    rival_ptrs.push_back( new Rival("temp", 0, 0, 0, 0, 0, id_nums[i], Point2D(0,0)));
+                break;
+                default:
+                    throw Invalid_Input("Error: reading from file");
+            }
+        }
+        //Based on the category information call the other restore functions (necessary to seperate due to pointers)
+        list<Pokemon*>::iterator pptr = pokemon_ptrs.begin(); 
+        list<BattleArena*>::iterator aptr = arena_ptrs.begin(); 
+        list<PokemonGym*>::iterator gptr = gym_ptrs.begin(); 
+        list<PokemonCenter*>::iterator cptr = center_ptrs.begin();
+        list<Rival*>::iterator rptr = rival_ptrs.begin();
+        for (int i = 0; i < num_of_active_objects; i++)
+        {
+            switch(display_codes[i])
+            {
+                case 'P':
+                case 'p':
+                    (*pptr)->restore(file, *this);
+                    advance(pptr,1);
+                break;
+                case 'A':
+                case 'a':
+                    (*aptr)->restore(file, *this);
+                    advance(aptr,1);
+                break;
+                case 'G':
+                case 'g':
+                    gym_ptrs.back()->restore(file, *this);
+                    advance(gptr,1);
+                break;
+                case 'C':
+                case 'c':
+                    center_ptrs.back()->restore(file, *this);
+                    advance(cptr,1);
+                break;
+                case 'R':
+                case 'r':
+                    rival_ptrs.back()->restore(file, *this);
+                    advance(rptr,1);
                 break;
                 default:
                     throw Invalid_Input("Error: reading from file");

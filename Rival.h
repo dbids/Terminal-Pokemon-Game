@@ -4,6 +4,7 @@ using namespace std;
 #include "GameObject.h"
 #include "Point2D.h"
 #include "BattleArena.h"
+#include "Attack_Types.h"
 
 #ifndef RIVAL_H
 #define RIVAL_H
@@ -24,7 +25,7 @@ public:
     Rival(string, double, double, double, double, double, int, Point2D);
         
     //Public Member Functions
-    void TakeHit(int, int, int);
+    void TakeHit(double defense, Attack_Types& attack_choice); //Changed for Extra Credit
     double get_phys_dmg();
     double get_magic_dmg();
     double get_defense();
@@ -43,6 +44,13 @@ public:
     void save(ofstream& file);
 	void restore(ifstream& file, Model& model);
     
+    //Extra Credit Attack List
+    Attack_Types attack_list[2];
+
+    //Extra Credit ASCII print function
+    void printBattlePokemon();
+    void printPokemon();
+
 protected:
     //Protected Member Variables
     double health;

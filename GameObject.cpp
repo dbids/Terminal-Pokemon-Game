@@ -104,6 +104,9 @@ void GameObject::restore(ifstream& file, Model& model)
 	id_num = stoi(line);
 	getline(file,line);
 	display_code = line[0];
-	getline(file,line);
-	state = line[0];
+	if (display_code != 'P') //Accounts for double digit
+	{
+		getline(file,line);
+		state = line[0];
+	}
 }

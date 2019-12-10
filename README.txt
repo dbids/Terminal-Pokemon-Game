@@ -16,7 +16,7 @@ Extra Credit:
 	to hype up the battles!  This means that I added a function to printPokemon within the Pokemon and Rival class and used it 
 	to print them at the start of the game and during battles.
 The video can be found here:
-
+https://youtu.be/ZHdZiIWwCPc
 
 ASCII ART SOURCES:
 https://textart.io/art/tag/pokemon/3

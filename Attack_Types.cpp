@@ -115,6 +115,14 @@ string Attack_Types::getName()
     return name;
 }
 
+void Attack_Types::levelUp()
+{
+   int mag_inc = (rand() % 4) + 1;
+   int phy_inc = (rand()) % 4 + 1;
+   cout << "Congratulations the move " << name << " has increased in magical power from " << magical_damage << " to " << magical_damage + mag_inc << endl;
+   cout << " and physical power from " << physical_damage << " to " << physical_damage + phy_inc << "!!" << endl;
+}
+
 //Used for loading
 Attack_Types::Attack_Types(std::string& in_name, double in_mag_dmg, double in_phy_dmg)
 {

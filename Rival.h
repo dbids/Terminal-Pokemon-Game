@@ -23,7 +23,8 @@ class Rival : public GameObject
 public:
     //Constructors / Destructors
     Rival(string, double, double, double, double, double, int, Point2D);
-        
+    ~Rival();
+    
     //Public Member Functions
     void TakeHit(double defense, Attack_Types& attack_choice); //Changed for Extra Credit
     double get_phys_dmg();

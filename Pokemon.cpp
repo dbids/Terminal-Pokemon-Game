@@ -299,7 +299,7 @@ void Pokemon::StartRecoveringStamina(unsigned int num_stamina_points)
 		cout << display_code << id_num << ": Not enough money to recover stamina." << endl;
 	else if (!(current_center->HasStaminaPoints()))
 		cout << display_code << id_num << ": Cannot recover! No stamina points remaining in this Pokemon Center!" << endl;
-	else if (state == IN_CENTER || state == RECOVERING_STAMINA)
+	else if (state != IN_CENTER && state != RECOVERING_STAMINA)
 		cout << display_code << id_num << ": I can only recover stamina at a Pokemon Center!" << endl;
 	else
 	{
@@ -525,6 +525,19 @@ bool Pokemon::Update()
 			unsigned int experience_points_gained = current_gym->TrainPokemon(training_units_to_buy);
 			experience_points += experience_points_gained;
 			
+			//Level up skills if the pokemon now has more than 7 experience points
+			if (experience_points > 7)
+			{
+				char yes_no;
+				cout << "Do you wish to spend 7 experience points to evolve (y/n) ? " << endl;
+				cin >> yes_no;
+				if (yes_no == 'y')
+				{
+					attack_list[0].levelUp();
+					attack_list[1].levelUp();
+				}
+			}
+
 			//Print the number of training units gained
 			cout << "** " << name << " completed " << training_units_to_buy;
 			if (training_units_to_buy == 1)
@@ -754,6 +767,7 @@ bool Pokemon::StartBattle()
 			TakeHit(this->defense, attack_choice);
 
 			cout << "OOF, he hit you with " << attack_choice.getName() << " for " << fabs(health_before - health) << endl;
+			cout << "Pokemon Health:" << health << endl;
 			attack_choice.printAttack();	
 		}
 		else
@@ -765,9 +779,10 @@ bool Pokemon::StartBattle()
 
 			health_before = target->get_health();
 			attack_choice = attack_list[rand() % 2];
-			TakeHit(target->get_defense(), attack_choice);
-
+			target->TakeHit(target->get_defense(), attack_choice);
+			cout << health_before << " " << target->get_health() << endl;
 			cout << "Nice!! You hit him with " << attack_choice.getName() << " for " << fabs(health_before - target->get_health()) << endl;
+			cout << "Rival Health:" << target->get_health() << endl;
 			attack_choice.printAttack();
 		}
 	}

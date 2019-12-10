@@ -11,6 +11,8 @@ class Attack_Types
         double getMagDamage();
         std::string getName();
 
+        void levelUp();
+
         void printAttack();
     private:
         std::string name;

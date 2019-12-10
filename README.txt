@@ -9,10 +9,14 @@ Extra Credit:
 	2) I also did the second extra credit where I added moves to the battle.  This resulted in me changing the TakeHit
 	function so if you with to see that then the old version is commented out below it.  This also involved implementing another class
 	called Attack_Types which handles the storage and choice of different attack types throughout the game.
-	3) I did the final extra credit option as well which was open ended. For this I used online ASCII art and added it to the game 
+	3) I also did the option where you are able to 'evolve' your pokemon by increasing their magical damage and
+	physical damage.  This was done in my case to the moves as they are what dish out the punches in my implementation
+	due to the edtion of the first extra credit option.
+	4) I did the final extra credit option as well which was open ended. For this I used online ASCII art and added it to the game 
 	to hype up the battles!  This means that I added a function to printPokemon within the Pokemon and Rival class and used it 
 	to print them at the start of the game and during battles.
 The video can be found here:
+
 
 ASCII ART SOURCES:
 https://textart.io/art/tag/pokemon/3

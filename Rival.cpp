@@ -21,8 +21,16 @@ Rival::Rival(string name, double speed, double hp, double phys_dmg, double magic
     defense = def;
     state = ALIVE_RIVAL;
 
+    cout << "Rival Constructed" << endl;
+
     //Print it
     printPokemon();
+}
+
+//Prints that the rival is destructed
+Rival::~Rival()
+{
+    cout << "Rival Destructed" << endl;
 }
 
 //Acts much the same as the TakeHit function for pokemon (REVISED)
@@ -86,6 +94,7 @@ bool Rival::Update()
         }
         break;
     }
+    return false;
 }
 
 //Shows the status of the rival class
@@ -195,7 +204,7 @@ void Rival::restore(ifstream& file, Model& model)
     GameObject::restore(file, model);
     
     //Restore the state properly
-    state = (state == '1') ? ALIVE_RIVAL : FAINTED_RIVAL;
+    state = (state == '0') ? ALIVE_RIVAL : FAINTED_RIVAL;
 
     getline(file,line);
     health = stod(line);

@@ -1,6 +1,6 @@
 # Things to Note:
 
-If it is useful the non-extra credit version of my code can be found here: https://github.com/EC327-Fall2019/pa4-dbids/commit/450b309c605e12c50400872ba1dc176e20cdae43.  Note that I it works 100% as well as the finished product, but I thought that this may be useful to you.
+If it is useful the non-extra credit version of my code can be found here: https://github.com/EC327-Fall2019/pa4-dbids/commit/450b309c605e12c50400872ba1dc176e20cdae43.  Note that it may not work 100% as well as the finished product and **should not** be treated as one, but I thought that this may be useful to you.
 
 ## Extra Credit:
   	1. I did the first extra credit for saving and loading functions.  Note that this was done to C++11 ( I used stoi, stod, stoul).
@@ -19,5 +19,5 @@ The video can be found here:
 https://youtu.be/ZHdZiIWwCPc
 
 ASCII ART SOURCES:
-https://textart.io/art/tag/pokemon/3
+https://textart.io/art/tag/pokemon/3,
 https://bellblitzking.itch.io/pokemonasciiversion

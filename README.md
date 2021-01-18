@@ -15,8 +15,6 @@ If it is useful the non-extra credit version of my code can be found here: https
 	4. I did the final extra credit option as well which was open ended. For this I used online ASCII art and added it to the game 
 	to hype up the battles!  This means that I added a function to printPokemon within the Pokemon and Rival class and used it 
 	to print them at the start of the game and during battles.
-The video can be found here:
-https://youtu.be/ZHdZiIWwCPc
 
 ASCII ART SOURCES:
 https://textart.io/art/tag/pokemon/3,
